@@ -66,7 +66,7 @@ client.on('messageCreate', async (message) => {
         messageId: message.id,
         content: message.cleanContent || message.content,
         timestamp: message.createdAt,
-        author: message.author.username,
+        author: message.member ? message.member.displayName : message.author.username,
         authorId: message.author.id,
         isBot: message.author.bot,
         channel: message.channel.name,
