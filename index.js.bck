@@ -1,0 +1,92 @@
+require('dotenv').config();
+const { Client, GatewayIntentBits } = require('discord.js');
+const axios = require('axios');
+
+// Configuração do cliente Discord com as intents necessárias
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ]
+});
+
+// Evento disparado quando o bot está pronto
+client.on('ready', () => {
+  console.log(`🤖 Bot conectado como ${client.user.tag}`);
+  console.log(`🔍 Monitorando mensagens no canal: grow-a-garden-stock`);
+});
+
+// Comando de teste para verificar se o bot está respondendo
+client.on('messageCreate', async (message) => {
+  // Log de todas as mensagens para depuração
+  console.log(`📨 Mensagem detectada no canal: ${message.channel.name} de: ${message.author.username}`);
+  
+  // Comando de teste simples
+  if (message.content === '!teste') {
+    message.channel.send('Bot funcionando!');
+    console.log('✅ Comando de teste respondido!');
+    return;
+  }
+
+  // Tratamento de mensagens de bots
+  if (message.author.bot) {
+    if (message.author.id === '929212048726650950') {
+      console.log(`🤖 Mensagem do bot Arcaiuz detectada!`);
+    } else {
+      console.log(`⏭️ Ignorando mensagem do bot: ${message.author.username}`);
+      return;
+    }
+  }
+
+  // Verificação do canal correto
+  if (message.channel.name === 'grow-a-garden-stock') {
+    console.log(`✅ Mensagem no canal correto!`);
+    console.log(`📝 Conteúdo: ${message.content.substring(0, 50)}...`);
+    
+    try {
+      console.log(`🔄 Tentando enviar para webhook: ${process.env.N8N_WEBHOOK_URL}`);
+      
+      const payload = {
+        content: message.content,
+        timestamp: message.createdAt,
+        author: message.author.username,
+        channel: message.channel.name
+      };
+      
+      console.log(`📦 Payload: ${JSON.stringify(payload)}`);
+      
+      const response = await axios.post(process.env.N8N_WEBHOOK_URL, payload, {
+        timeout: 10000, // 10 segundos de timeout
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log(`📤 Mensagem enviada para o n8n com status: ${response.status}`);
+    } catch (err) {
+      console.error(`❌ Erro ao enviar para o n8n: ${err.message}`);
+      if (err.response) {
+        console.error(`📋 Detalhes do erro: ${JSON.stringify(err.response.data)}`);
+      }
+    }
+  } else {
+    console.log(`❌ Mensagem em canal diferente: ${message.channel.name}`);
+  }
+});
+
+// Tratamento de erros para evitar que o bot caia
+client.on('error', (error) => {
+  console.error(`🔴 Erro no cliente Discord: ${error.message}`);
+});
+
+process.on('unhandledRejection', (error) => {
+  console.error(`🔴 Erro não tratado: ${error.message}`);
+});
+
+// Login do bot
+console.log('🔑 Tentando conectar com o token fornecido...');
+client.login(process.env.TOKEN_DISCORD)
+  .catch(error => {
+    console.error(`🔴 Erro ao fazer login: ${error.message}`);
+  });

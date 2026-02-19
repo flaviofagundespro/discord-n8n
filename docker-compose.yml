@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  discord-n8n:
+    image: discord-n8n:latest
+    build: .
+    environment:
+      - TOKEN_DISCORD=${TOKEN_DISCORD}
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL}
+      - DISCORD_CHANNEL_NAME=${DISCORD_CHANNEL_NAME}
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
