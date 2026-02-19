@@ -64,7 +64,7 @@ client.on('messageCreate', async (message) => {
 
       const payload = {
         messageId: message.id,
-        content: message.content,
+        content: message.cleanContent || message.content,
         timestamp: message.createdAt,
         author: message.author.username,
         authorId: message.author.id,
