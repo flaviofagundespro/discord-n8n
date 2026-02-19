@@ -11,23 +11,23 @@ const client = new Client({
 });
 
 client.on('ready', () => {
-  console.log(`🤖 Bot conectado como ${client.user.tag}`);
-  console.log(`🔍 Monitorando mensagens no canal: ${process.env.DISCORD_CHANNEL_NAME}`);
+  console.log(`🤖 Bot connected as ${client.user.tag}`);
+  console.log(`🔍 Monitoring messages in channel: ${process.env.DISCORD_CHANNEL_NAME}`);
 });
 
 client.on('messageCreate', async (message) => {
-  console.log(`📨 Mensagem detectada no canal: ${message.channel.name} de: ${message.author.username}`);
+  console.log(`📨 Message detected in channel: ${message.channel.name} from: ${message.author.username}`);
 
-  if (message.content === '!teste') {
-    message.channel.send('Bot funcionando!');
-    console.log('✅ Comando de teste respondido!');
+  if (message.content === '!test') {
+    message.channel.send('Bot is working!');
+    console.log('✅ Test command responded!');
   }
 
   if (message.channel.name === process.env.DISCORD_CHANNEL_NAME) {
-    console.log(`✅ Mensagem no canal correto!`);
+    console.log(`✅ Message in the correct channel!`);
 
     try {
-      // Extrair embeds e componentes
+      // Extract embeds and components
       const embeds = message.embeds.map(embed => {
         return {
           title: embed.title,
@@ -44,7 +44,7 @@ client.on('messageCreate', async (message) => {
         };
       });
 
-      // Extrair componentes (botões, menus, etc.)
+      // Extract components (buttons, menus, etc.)
       const components = [];
       if (message.components && message.components.length > 0) {
         message.components.forEach(row => {
@@ -84,18 +84,18 @@ client.on('messageCreate', async (message) => {
         }
       });
 
-      console.log(`📤 Mensagem enviada para o n8n com status: ${response.status}`);
+      console.log(`📤 Message sent to n8n with status: ${response.status}`);
     } catch (err) {
-      console.error(`❌ Erro ao enviar para o n8n: ${err.message}`);
+      console.error(`❌ Error sending to n8n: ${err.message}`);
     }
   }
 });
 
 client.on('error', (error) => {
-  console.error(`🔴 Erro no cliente Discord: ${error.message}`);
+  console.error(`🔴 Discord client error: ${error.message}`);
 });
 
 client.login(process.env.TOKEN_DISCORD)
   .catch(error => {
-    console.error(`🔴 Erro ao fazer login: ${error.message}`);
+    console.error(`🔴 Login error: ${error.message}`);
   });
